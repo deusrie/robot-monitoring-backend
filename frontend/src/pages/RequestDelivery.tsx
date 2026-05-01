@@ -5,9 +5,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { useToast } from "@/hooks/use-toast";
 import { useDelivery } from "@/lib/deliveryStore";
 import { authAPI, usersAPI, robotsAPI } from "@/lib/api";
-import { deliveriesAPI } from "@/lib/api";
 import type { UserProfile } from "@/lib/types";
-
 import {
   User, Package, MessageSquare,
   Send, Bot, CheckCircle2, AlertCircle,
@@ -256,62 +254,59 @@ export default function RequestDelivery() {
     setErrors({});
   }
 
-
-
   // ── Submit ────────────────────────────────────────────────────────────────
- async function handleSubmit(e: React.FormEvent) {
-  e.preventDefault();
-  if (!validate()) return;
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!validate()) return;
 
-  setSubmitting(true);
+    setSubmitting(true);
 
-  const onlineRobots = robots.filter((r) => r.status === "Online");
-  const robot =
-    onlineRobots[Math.floor(Math.random() * onlineRobots.length)] ??
-    robots[0];
+    const onlineRobots = robots.filter((r) => r.status === "Online");
+    const robot = onlineRobots[Math.floor(Math.random() * onlineRobots.length)] ?? robots[0];
 
-  const sender: UserProfile = me
-    ? toUserProfile({ ...me, avatarColor: "#800000" })
-    : {
-        id: "unknown",
-        name: "You",
-        room: "—",
-        building: "PUP Manila",
-        initials: "?",
-        avatarColor: "#800000",
-      };
+    // Build sender profile from real API data
+    const sender: UserProfile = me
+      ? toUserProfile({ ...me, avatarColor: "#800000" })
+      : { id: "unknown", name: "You", room: "—", building: "PUP Manila", initials: "?", avatarColor: "#800000" };
 
-  try {
-    await deliveriesAPI.createRequest({
-      document_name: itemName.trim(),
-      sender: sender.name,
-      recipient: recipient!.name,
-      pickup_location: `${pickupFloor} - Room ${pickupRoom}`,
-      dropoff_location: recipient!.room,
-    });
+    // Force avatarColor to maroon for the logged-in sender
+    sender.avatarColor = "#800000";
 
-    toast({
-      title: "Robot dispatched!",
-      description:
-        timingMode === "now"
+    try {
+      createDelivery({
+        sender,
+        recipient: recipient!,
+        item: {
+          name:   itemName.trim(),
+          qty:    parseInt(qty) || 1,
+          weight: 0,          // not collected — university context
+        },
+        senderNote: note.trim(),
+        priority:   "standard",   // single tier — no premium
+        fee:        0,            // free service
+        robotId:    robot?.id   ?? "RBT-001",
+        robotName:  robot?.name ?? "PUP-BOT Unit 1",
+      });
+
+      toast({
+        title:       "Robot dispatched!",
+        description: timingMode === "now"
           ? "Your delivery is on its way."
           : `Scheduled for ${schedTime}.`,
-    });
+      });
 
-    handleClear();
-    setTimeout(() => navigate("/history"), 1000);
-  } catch (err) {
-    toast({
-      title: "Failed to dispatch",
-      description:
-        (err as Error)?.message || "Something went wrong. Please try again.",
-      variant: "destructive",
-    });
-  } finally {
-    setSubmitting(false);
+      handleClear();
+      setTimeout(() => navigate("/history"), 1000);
+    } catch {
+      toast({
+        title:       "Failed to dispatch",
+        description: "Something went wrong. Please try again.",
+        variant:     "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   }
-}
-
 
   // ── Loading / error states ────────────────────────────────────────────────
   if (meLoading) {
