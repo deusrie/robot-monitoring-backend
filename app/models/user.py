@@ -22,23 +22,6 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # -------------------------
-    # RELATIONSHIPS (IMPORTANT)
-    # -------------------------
-    requested_deliveries = db.relationship(
-        "Delivery",
-        foreign_keys="Delivery.requested_by_user_id",
-        backref="requester_user",
-        lazy=True
-    )
-
-    received_deliveries = db.relationship(
-        "Delivery",
-        foreign_keys="Delivery.received_by_user_id",
-        backref="receiver_user",
-        lazy=True
-    )
-
-    # -------------------------
     # HELPER
     # -------------------------
     def to_dict(self):
