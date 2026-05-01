@@ -12,14 +12,12 @@ deliveries_bp = Blueprint("deliveries", __name__)
 @jwt_required()
 def create_request():
     user_id = int(get_jwt_identity())
-    claims = get_jwt()
-
     data = request.get_json() or {}
 
     required_fields = [
         "document_name",
         "sender",
-        "recipient",
+        "recipient_user_id",  # expect recipient as a user ID now
         "pickup_location",
         "dropoff_location",
     ]
@@ -28,10 +26,15 @@ def create_request():
         if not data.get(field):
             return {"error": f"{field} is required"}, 400
 
+    # Validate recipient exists
+    recipient = User.query.get(data["recipient_user_id"])
+    if not recipient:
+        return {"error": "Recipient user not found"}, 404
+
     delivery = Delivery(
         document_name=data["document_name"],
         sender=data["sender"],
-        recipient=data["recipient"],
+        recipient_user_id=data["recipient_user_id"],
         pickup_location=data["pickup_location"],
         dropoff_location=data["dropoff_location"],
         status="pending_request",
@@ -48,9 +51,14 @@ def create_request():
             "document_name": delivery.document_name,
             "status": delivery.status,
             "requested_by_user_id": delivery.requested_by_user_id,
+            "recipient_user_id": delivery.recipient_user_id,
             "created_at": delivery.created_at.isoformat()
         }
     }, 201
+
+
+
+
 
 
 @deliveries_bp.get("/my-requests")
