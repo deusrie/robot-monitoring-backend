@@ -309,11 +309,6 @@ export default function RequestDelivery() {
 
 
 
-
-
-
-
-
   // ── Loading / error states ────────────────────────────────────────────────
   if (meLoading) {
     return (
