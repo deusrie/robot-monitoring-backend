@@ -4,7 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { AppLayout } from "@/components/AppLayout";
 import { useToast } from "@/hooks/use-toast";
 import { useDelivery } from "@/lib/deliveryStore";
-import { authAPI, usersAPI, robotsAPI, deliveriesAPI } from "@/lib/api";
+import { authAPI, usersAPI, robotsAPI } from "@/lib/api";
+import { deliveriesAPI } from "@/lib/api";
 import type { UserProfile } from "@/lib/types";
 
 import {
@@ -263,6 +264,14 @@ export default function RequestDelivery() {
   // ── Submit ────────────────────────────────────────────────────────────────
  async function handleSubmit(e: React.FormEvent) {
   e.preventDefault();
+  if (!validate()) return;
+
+  setSubmitting(true);
+
+  const onlineRobots = robots.filter((r) => r.status === "Online");
+  const robot =
+    onlineRobots[Math.floor(Math.random() * onlineRobots.length)] ??
+    robots[0];
 
   const sender: UserProfile = me
     ? toUserProfile({ ...me, avatarColor: "#800000" })
@@ -294,11 +303,11 @@ export default function RequestDelivery() {
 
     handleClear();
     setTimeout(() => navigate("/history"), 1000);
-
   } catch (err) {
     toast({
       title: "Failed to dispatch",
-      description: (err as Error)?.message || "Something went wrong. Please try again.",
+      description:
+        (err as Error)?.message || "Something went wrong. Please try again.",
       variant: "destructive",
     });
   } finally {
