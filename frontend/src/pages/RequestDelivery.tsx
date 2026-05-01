@@ -258,9 +258,6 @@ export default function RequestDelivery() {
 
 
 
-
-
-
   // ── Submit ────────────────────────────────────────────────────────────────
  async function handleSubmit(e: React.FormEvent) {
   e.preventDefault();
@@ -314,8 +311,6 @@ export default function RequestDelivery() {
     setSubmitting(false);
   }
 }
-
-
 
 
   // ── Loading / error states ────────────────────────────────────────────────
