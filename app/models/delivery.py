@@ -1,3 +1,7 @@
+from datetime import datetime
+from app.extensions import db
+
+
 class Delivery(db.Model):
     __tablename__ = "deliveries"
 
