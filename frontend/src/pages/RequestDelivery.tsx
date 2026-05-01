@@ -264,7 +264,7 @@ export default function RequestDelivery() {
   try {
     await deliveriesAPI.createRequest({
       document_name: itemName.trim(),
-      sender: Send.name,
+      sender: me!.name,
       recipient: recipient!.name,
       pickup_location: pickupRoom,
       dropoff_location: recipient!.room,
