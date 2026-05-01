@@ -53,53 +53,25 @@ export const robotsAPI = {
   update: (id: number, data: any) => apiCall(`/robots/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
 };
 
-// ─── Deliveries ────────────────────────────────────────────────────────────────
+// ─── Deliveries (Mock) ────────────────────────────────────────────────
 export const deliveriesAPI = {
-  // Create a delivery request
-  createRequest: (data: {
-    document_name: string;
-    sender: string;
-    recipient: string;
-    pickup_location: string;
-    dropoff_location: string;
-  }) =>
-    apiCall('/deliveries/request', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }),
+  createRequest: async (data: any) =>
+    Promise.resolve({ id: 1, ...data, status: "Pending" }),
 
-  // Get current user's delivery requests
-  getMyRequests: () =>
-    apiCall('/deliveries/my-requests'),
+  getMyRequests: async () =>
+    Promise.resolve([
+      { id: 1, document_name: "Contract.pdf", status: "Pending" },
+      { id: 2, document_name: "Invoice.docx", status: "Received" },
+    ]),
 
-  // Get a delivery by ID
-  getById: (id: number) =>
-    apiCall(`/deliveries/${id}`),
+  getById: async (id: number) =>
+    Promise.resolve({ id, document_name: "Contract.pdf", status: "Pending" }),
 
-  // Confirm delivery received
-  confirmReceived: (deliveryId: number) =>
-    apiCall(`/deliveries/${deliveryId}/received`, {
-      method: 'PUT',
-      body: JSON.stringify({}),
-    }),
-
-  // Admin: Get all deliveries
-  getAllDeliveries: () =>
-    apiCall('/deliveries/admin/all'),
-
-  // Admin: Update delivery
-  updateDelivery: (deliveryId: number, data: any) =>
-    apiCall(`/deliveries/admin/${deliveryId}`, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    }),
-
-  // Admin: Delete delivery
-  deleteDelivery: (deliveryId: number) =>
-    apiCall(`/deliveries/admin/${deliveryId}`, {
-      method: 'DELETE',
-    }),
+  confirmReceived: async (deliveryId: number) =>
+    Promise.resolve({ id: deliveryId, status: "Received" }),
 };
+
+
 // ─── Telemetry ────────────────────────────────────────────────────────────────
 export const telemetryAPI = {
   getAll: () => apiCall('/telemetry'),
