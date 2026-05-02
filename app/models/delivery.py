@@ -16,6 +16,7 @@ class Delivery(db.Model):
     robot_id = db.Column(db.Integer, db.ForeignKey("robots.id"), nullable=True)
 
     requested_by_user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    recipient_user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     received_by_user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
 
     received_confirmed = db.Column(db.Boolean, default=False)
