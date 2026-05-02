@@ -59,7 +59,7 @@ export const deliveriesAPI = {
   createRequest: (data: {
     document_name: string;
     sender: string;
-    recipient: string;
+    recipient_user_id: number;
     pickup_location: string;
     dropoff_location: string;
   }) =>
