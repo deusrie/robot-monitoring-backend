@@ -281,7 +281,7 @@ export default function DeliveryInbox() {
 });
 
 const arrivedDeliveries = inboxDeliveries.filter(
-  (d: any) => d.status === "delivered" && !d.received_confirmed
+  (d: any) => !d.received_confirmed && d.status !== "received"
 );
 
 const historyDeliveries = inboxDeliveries
