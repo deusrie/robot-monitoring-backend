@@ -226,3 +226,34 @@ def admin_delete_delivery(delivery_id):
     db.session.commit()
 
     return {"message": "Delivery deleted successfully"}, 200
+
+
+@deliveries_bp.get("/inbox")
+@jwt_required()
+def get_delivery_inbox():
+    user_id = int(get_jwt_identity())
+
+    deliveries = (
+        Delivery.query
+        .filter_by(recipient_user_id=user_id)
+        .order_by(Delivery.created_at.desc())
+        .all()
+    )
+
+    return [
+        {
+            "id": d.id,
+            "document_name": d.document_name,
+            "sender": d.sender,
+            "recipient": d.recipient,
+            "recipient_user_id": d.recipient_user_id,
+            "pickup_location": d.pickup_location,
+            "dropoff_location": d.dropoff_location,
+            "status": d.status,
+            "received_confirmed": d.received_confirmed,
+            "received_at": d.received_at.isoformat() if d.received_at else None,
+            "created_at": d.created_at.isoformat(),
+            "updated_at": d.updated_at.isoformat() if d.updated_at else None,
+        }
+        for d in deliveries
+    ], 200
