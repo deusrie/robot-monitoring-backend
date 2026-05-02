@@ -96,7 +96,7 @@ function ArrivedCard({
   delivery,
   onConfirm,
 }: {
-  delivery: any;
+  delivery: Delivery;
   onConfirm: (id: string) => void;
 }) {
   const [showDialog, setShowDialog] = useState(false);
@@ -124,9 +124,9 @@ function ArrivedCard({
               <CheckCircle className="h-3 w-3" />
               Robot Delivered
             </span>
-            {delivery.created_at && (
+            {delivery.arrivedAt && (
               <span className="text-[11px] text-gray-400">
-                Arrived {timeAgo(delivery.created_at)}
+                Arrived {timeAgo(delivery.arrivedAt)}
               </span>
             )}
           </div>
@@ -142,12 +142,12 @@ function ArrivedCard({
               className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
               style={{ background: "#800000", color: "#FFD700" }}
             >
-              {delivery.sender.slice(0, 2).toUpperCase()}
+              {delivery.sender.initials}
             </div>
             <div>
               <p className="text-[11px] text-gray-400 leading-none mb-0.5">Sent by</p>
               <p className="text-sm font-semibold text-[#1A1A1A] leading-tight">
-                {delivery.sender}
+                {delivery.sender.name}
               </p>
               <p className="text-xs text-gray-500">
                 {delivery.sender.room}, {delivery.sender.building}
@@ -169,15 +169,15 @@ function ArrivedCard({
             <div className="divide-y divide-gray-100">
               <div className="px-3 py-2 flex justify-between text-xs">
                 <span className="text-gray-400">Item</span>
-                <span className="font-medium text-[#1A1A1A]">{delivery.document_name}</span>
+                <span className="font-medium text-[#1A1A1A]">{delivery.item.name}</span>
               </div>
               <div className="px-3 py-2 flex justify-between text-xs">
                 <span className="text-gray-400">Qty</span>
-                <span className="font-medium text-[#1A1A1A]">1</span>
+                <span className="font-medium text-[#1A1A1A]">{delivery.item.qty}</span>
               </div>
               <div className="px-3 py-2 flex justify-between text-xs">
                 <span className="text-gray-400">Weight</span>
-                <span className="font-medium text-[#1A1A1A]">N/A</span>
+                <span className="font-medium text-[#1A1A1A]">{delivery.item.weight} kg</span>
               </div>
               {delivery.senderNote && (
                 <div className="px-3 py-2 text-xs">
@@ -219,7 +219,7 @@ function ArrivedCard({
 }
 
 // ─── History Row ──────────────────────────────────────────────────────────────
-function HistoryRow({ delivery }: { delivery: any }) {
+function HistoryRow({ delivery }: { delivery: Delivery }) {
   const isCompleted = delivery.status === "completed";
   return (
     <div className="bg-white border border-gray-100 rounded-lg px-4 py-3 flex items-center gap-3">
@@ -230,9 +230,9 @@ function HistoryRow({ delivery }: { delivery: any }) {
           </span>
         </div>
         <p className="text-sm font-medium text-[#1A1A1A] truncate">
-          {delivery.document_name}
+          {delivery.item.name}
           <span className="text-gray-400 font-normal text-xs">
-            {" "}from {delivery.sender}
+            {" "}from {delivery.sender.name}
           </span>
         </p>
       </div>
@@ -281,7 +281,7 @@ export default function DeliveryInbox() {
 });
 
 const arrivedDeliveries = inboxDeliveries.filter(
-  (d: any) => !d.received_confirmed && d.status !== "received"
+  (d: any) => d.status === "delivered" && !d.received_confirmed
 );
 
 const historyDeliveries = inboxDeliveries
