@@ -38,7 +38,7 @@ def create_request():
         recipient=recipient.full_name,
         pickup_location=data["pickup_location"],
         dropoff_location=data["dropoff_location"],
-        status="pending_request",
+        status="delivered",
         requested_by_user_id=user_id
     )
 
