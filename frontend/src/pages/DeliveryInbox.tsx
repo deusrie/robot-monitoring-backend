@@ -10,6 +10,7 @@ import { useDelivery } from "@/lib/deliveryStore";
 import type { Delivery } from "@/lib/types";
 import { AppLayout } from "@/components/AppLayout";
 import { toast } from "@/components/ui/feedback/sonner";
+import { useQuery } from "@tanstack/react-query";
 import { deliveriesAPI } from "@/lib/api";
 
 
@@ -274,15 +275,21 @@ function NoArrivedEmpty() {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function DeliveryInbox() {
-  const { getActiveDeliveriesForRecipient, getDeliveryHistoryForRecipient, confirmReceipt } =
-    useDelivery();
+  const { data: inboxDeliveries = [], refetch } = useQuery({
+  queryKey: ["deliveryInbox"],
+  queryFn: () => deliveriesAPI.getInbox(),
+});
 
-  const arrivedDeliveries = getActiveDeliveriesForRecipient(RECIPIENT_ID);
+const arrivedDeliveries = inboxDeliveries.filter(
+  (d: any) => d.status === "delivered" && !d.received_confirmed
+);
 
-  const historyDeliveries = getDeliveryHistoryForRecipient(RECIPIENT_ID).sort(
-    (a, b) =>
-      new Date(b.completedAt ?? b.createdAt).getTime() -
-      new Date(a.completedAt ?? a.createdAt).getTime()
+const historyDeliveries = inboxDeliveries
+  .filter((d: any) => d.status === "received" || d.received_confirmed)
+  .sort(
+    (a: any, b: any) =>
+      new Date(b.received_at ?? b.created_at).getTime() -
+      new Date(a.received_at ?? a.created_at).getTime()
   );
 
   const handleConfirm = useCallback(
@@ -290,11 +297,12 @@ export default function DeliveryInbox() {
     try {
       await deliveriesAPI.confirmReceived(Number(id));
       toast.success("Receipt confirmed! Transaction complete.");
+      refetch();
     } catch (error: any) {
       toast.error(error.message || "Failed to confirm receipt");
     }
   },
-  []
+  [refetch]
 );
 
   return (
