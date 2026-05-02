@@ -72,6 +72,10 @@ export const deliveriesAPI = {
   getMyRequests: () =>
     apiCall('/deliveries/my-requests'),
 
+  // Get deliveries where user is the recipient
+  getInbox: () =>
+    apiCall('/deliveries/inbox'),
+
   // Get a delivery by ID
   getById: (id: number) =>
     apiCall(`/deliveries/${id}`),
