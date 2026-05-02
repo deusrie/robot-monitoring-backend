@@ -108,7 +108,7 @@ function ArrivedCard({
           onCancel={() => setShowDialog(false)}
           onConfirm={() => {
             setShowDialog(false);
-            onConfirm(delivery.id);
+            onConfirm(String(delivery.id));
           }}
         />
       )}
@@ -124,9 +124,9 @@ function ArrivedCard({
               <CheckCircle className="h-3 w-3" />
               Robot Delivered
             </span>
-            {delivery.arrivedAt && (
+            {delivery.created_at && (
               <span className="text-[11px] text-gray-400">
-                Arrived {timeAgo(delivery.arrivedAt)}
+                Arrived {timeAgo(delivery.created_at)}
               </span>
             )}
           </div>
@@ -142,15 +142,15 @@ function ArrivedCard({
               className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
               style={{ background: "#800000", color: "#FFD700" }}
             >
-              {delivery.sender.initials}
+              {delivery.sender.slice(0, 2).toUpperCase()}
             </div>
             <div>
               <p className="text-[11px] text-gray-400 leading-none mb-0.5">Sent by</p>
               <p className="text-sm font-semibold text-[#1A1A1A] leading-tight">
-                {delivery.sender.name}
+                {delivery.sender}
               </p>
               <p className="text-xs text-gray-500">
-                {delivery.sender.room}, {delivery.sender.building}
+                {delivery.pickup_location}
               </p>
             </div>
           </div>
@@ -169,22 +169,17 @@ function ArrivedCard({
             <div className="divide-y divide-gray-100">
               <div className="px-3 py-2 flex justify-between text-xs">
                 <span className="text-gray-400">Item</span>
-                <span className="font-medium text-[#1A1A1A]">{delivery.item.name}</span>
+                <span className="font-medium text-[#1A1A1A]">{delivery.document_name}</span>
               </div>
               <div className="px-3 py-2 flex justify-between text-xs">
                 <span className="text-gray-400">Qty</span>
-                <span className="font-medium text-[#1A1A1A]">{delivery.item.qty}</span>
+                <span className="font-medium text-[#1A1A1A]">{delivery.quantity ?? 1}</span>
               </div>
               <div className="px-3 py-2 flex justify-between text-xs">
                 <span className="text-gray-400">Weight</span>
-                <span className="font-medium text-[#1A1A1A]">{delivery.item.weight} kg</span>
+                <span className="font-medium text-[#1A1A1A]">N/A</span>
               </div>
-              {delivery.senderNote && (
-                <div className="px-3 py-2 text-xs">
-                  <span className="text-gray-400 block mb-0.5">Sender note</span>
-                  <span className="text-gray-600 italic">"{delivery.senderNote}"</span>
-                </div>
-              )}
+             
             </div>
           </div>
 
@@ -230,9 +225,9 @@ function HistoryRow({ delivery }: { delivery: Delivery }) {
           </span>
         </div>
         <p className="text-sm font-medium text-[#1A1A1A] truncate">
-          {delivery.item.name}
+          {delivery.document_name}
           <span className="text-gray-400 font-normal text-xs">
-            {" "}from {delivery.sender.name}
+            {" "}from {delivery.sender}
           </span>
         </p>
       </div>
@@ -248,7 +243,7 @@ function HistoryRow({ delivery }: { delivery: Delivery }) {
           {isCompleted ? "Completed" : "Cancelled"}
         </span>
         <span className="text-[10px] text-gray-400">
-          {formatTimestamp(delivery.completedAt ?? delivery.createdAt)}
+          {formatTimestamp(delivery.received_at ?? delivery.created_at)}
         </span>
       </div>
     </div>
