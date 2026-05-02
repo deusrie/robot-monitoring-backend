@@ -10,6 +10,8 @@ import { useDelivery } from "@/lib/deliveryStore";
 import type { Delivery } from "@/lib/types";
 import { AppLayout } from "@/components/AppLayout";
 import { toast } from "@/components/ui/feedback/sonner";
+import { deliveriesAPI } from "@/lib/api";
+
 
 // ─── Simulated recipient ──────────────────────────────────────────────────────
 const RECIPIENT_ID = "usr-002";
@@ -284,12 +286,16 @@ export default function DeliveryInbox() {
   );
 
   const handleConfirm = useCallback(
-    (id: string) => {
-      confirmReceipt(id);
+  async (id: string) => {
+    try {
+      await deliveriesAPI.confirmReceived(Number(id));
       toast.success("Receipt confirmed! Transaction complete.");
-    },
-    [confirmReceipt]
-  );
+    } catch (error: any) {
+      toast.error(error.message || "Failed to confirm receipt");
+    }
+  },
+  []
+);
 
   return (
     <AppLayout title="Delivery Inbox">
