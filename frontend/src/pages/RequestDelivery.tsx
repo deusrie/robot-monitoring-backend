@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AppLayout } from "@/components/AppLayout";
 import { useToast } from "@/hooks/use-toast";
 import { useDelivery } from "@/lib/deliveryStore";
-import { authAPI, usersAPI, robotsAPI } from "@/lib/api";
+import { authAPI, usersAPI, robotsAPI, deliveriesAPI } from "@/lib/api";
 import type { UserProfile } from "@/lib/types";
 import {
   User, Package, MessageSquare,
@@ -142,7 +142,7 @@ function SummaryRow({ label, children }: { label: string; children: React.ReactN
 export default function RequestDelivery() {
   const navigate  = useNavigate();
   const { toast } = useToast();
-  const { createDelivery } = useDelivery();
+  
 
   // ── Fetch current user ────────────────────────────────────────────────────
   const { data: me, isLoading: meLoading, error: meError } = useQuery({
@@ -255,7 +255,7 @@ export default function RequestDelivery() {
   }
 
   // ── Submit ────────────────────────────────────────────────────────────────
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!validate()) return;
 
@@ -273,20 +273,13 @@ export default function RequestDelivery() {
     sender.avatarColor = "#800000";
 
     try {
-      createDelivery({
-        sender,
-        recipient: recipient!,
-        item: {
-          name:   itemName.trim(),
-          qty:    parseInt(qty) || 1,
-          weight: 0,          // not collected — university context
-        },
-        senderNote: note.trim(),
-        priority:   "standard",   // single tier — no premium
-        fee:        0,            // free service
-        robotId:    robot?.id   ?? "RBT-001",
-        robotName:  robot?.name ?? "PUP-BOT Unit 1",
-      });
+      await deliveriesAPI.createRequest({
+        document_name: itemName.trim(),
+        sender: sender.name,
+        recipient_user_id: Number(recipient!.id),
+        pickup_location: pickupRoom,
+        dropoff_location: recipient!.room,
+  });
 
       toast({
         title:       "Robot dispatched!",
