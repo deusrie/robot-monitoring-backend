@@ -34,7 +34,8 @@ def create_request():
     delivery = Delivery(
         document_name=data["document_name"],
         sender=data["sender"],
-        recipient_user_id=data["recipient_user_id"],
+        recipient_user_id=int(data["recipient_user_id"]),
+        recipient=recipient.full_name,
         pickup_location=data["pickup_location"],
         dropoff_location=data["dropoff_location"],
         status="pending_request",
@@ -80,6 +81,7 @@ def get_my_requests():
             "document_name": d.document_name,
             "sender": d.sender,
             "recipient": d.recipient,
+            "recipient_user_id": d.recipient_user_id,
             "pickup_location": d.pickup_location,
             "dropoff_location": d.dropoff_location,
             "status": d.status,
@@ -103,6 +105,7 @@ def get_delivery(delivery_id):
         "document_name": delivery.document_name,
         "sender": delivery.sender,
         "recipient": delivery.recipient,
+        "recipient_user_id": d.recipient_user_id,
         "pickup_location": delivery.pickup_location,
         "dropoff_location": delivery.dropoff_location,
         "status": delivery.status,
@@ -124,7 +127,7 @@ def confirm_received(delivery_id):
 
     delivery = Delivery.query.get_or_404(delivery_id)
 
-    if delivery.requested_by_user_id != user_id:
+    if delivery.recipient_user_id != user_id:
         return {"error": "You are not allowed to confirm this delivery"}, 403
 
     if delivery.status != "delivered":
@@ -161,6 +164,7 @@ def get_all_requests():
             "document_name": d.document_name,
             "sender": d.sender,
             "recipient": d.recipient,
+            "recipient_user_id": d.recipient_user_id,
             "pickup_location": d.pickup_location,
             "dropoff_location": d.dropoff_location,
             "status": d.status,
