@@ -35,21 +35,17 @@ export interface TimelineEvent {
 }
 
 export interface Delivery {
-  id: string            // e.g. "DEL-20251"
-  sender: UserProfile   // User1
-  recipient: UserProfile// User2
-  item: DeliveryItem
-  senderNote: string
-  priority: DeliveryPriority
-  fee: number           // PHP
-  status: DeliveryStatus
-  robotId: string       // e.g. "RBT-001"
-  robotName: string     // e.g. "PUP-BOT Unit 1"
-  createdAt: string     // when User1 submitted — robot dispatches at this moment
-  pickedUpAt?: string
-  arrivedAt?: string    // when robot reached User2's room
-  completedAt?: string  // when User2 tapped "Confirm Receipt"
-  timeline: TimelineEvent[]
-  estimatedArrival: string  // e.g. "8 mins"
-  distance: string          // e.g. "320 m"
+  id: number;
+  document_name: string;
+  quantity: number;
+  sender: string;
+  recipient: string;
+  recipient_user_id: number;
+  pickup_location: string;
+  dropoff_location: string;
+  status: string;
+  received_confirmed: boolean;
+  received_at?: string;
+  created_at: string;
+  updated_at?: string;
 }
