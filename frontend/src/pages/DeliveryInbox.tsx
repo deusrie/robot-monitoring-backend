@@ -215,7 +215,7 @@ function ArrivedCard({
 
 // ─── History Row ──────────────────────────────────────────────────────────────
 function HistoryRow({ delivery }: { delivery: Delivery }) {
-  const isCompleted = delivery.status === "completed";
+  const isCompleted = delivery.status === "received";
   return (
     <div className="bg-white border border-gray-100 rounded-lg px-4 py-3 flex items-center gap-3">
       <div className="flex-1 min-w-0">
