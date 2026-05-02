@@ -105,7 +105,7 @@ def get_delivery(delivery_id):
         "document_name": delivery.document_name,
         "sender": delivery.sender,
         "recipient": delivery.recipient,
-        "recipient_user_id": d.recipient_user_id,
+        "recipient_user_id": delivery.recipient_user_id,
         "pickup_location": delivery.pickup_location,
         "dropoff_location": delivery.dropoff_location,
         "status": delivery.status,
